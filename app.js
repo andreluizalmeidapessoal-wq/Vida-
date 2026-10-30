@@ -31,6 +31,7 @@ function aviso(msg,desfazer){const t=$('#toast');t.replaceChildren(msg+' ');if(d
 const remover=o=>{del(o.id);aviso('Removido.',()=>put(o));render()};
 const lixo=o=>h('button',{'aria-label':'Excluir este item',onclick:()=>remover(o)},'Excluir');
 const card=(tit,...k)=>h('section',{class:'card'},h('h2',{},tit),...k);
+const go=t=>{tab=t;render()};
 const ir=(t,l)=>h('button',{class:'p',onclick:()=>{tab=t;render()}},l);
 const pg=(v,m)=>{const p=Math.min(100,Math.round(v/m*100));return h('div',{class:'pg',role:'progressbar','aria-valuemin':'0','aria-valuemax':'100','aria-valuenow':p},h('i',{style:'width:'+p+'%'}))};
 const chip=(nome,val,txt,on,fn)=>h('label',{class:'chip'},h('input',{type:'radio',name:nome,value:val,...(on?{checked:''}:{}),onchange:fn}),h('span',{},txt));
@@ -45,15 +46,14 @@ function seq(b){let n=0;const d=new Date();if(!feito(b,day(d)))d.setDate(d.getDa
 const tg=b=>{const on=!!feito(b,day());return h('button',{class:'tg'+(on?' on':''),'aria-pressed':on,onclick:()=>marcar(b)},(on?'✓ ':'')+b.txt)};
 
 function vHoje(){
-  const c=cfg(),hj=day(),mv=items.filter(x=>x.t==='gasto'&&x.d.startsWith(hj.slice(0,7))),gas=somav(mv.filter(x=>x.k!=='e')),ent=somav(mv.filter(x=>x.k==='e'));
-  const gH=somav(mv.filter(x=>x.d===hj&&x.k!=='e')),f=soma(doDia('foco')),u7=ult(7),tr=new Set(items.filter(x=>x.t==='treino'&&u7.includes(x.d)).map(x=>x.d)).size,hb=habs();
-  return h('div',{},h('h1',{},new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})),
-    card('Gasto de hoje',h('p',{class:'big'},brl(gH)),h('p',{class:'sub'},'Saldo do mês: '+brl(ent-gas)),ir('fin','Registrar')),
-    card('Foco de hoje',h('p',{class:'big'},f?dur(f):'0 min'),pg(f,c.foco),h('p',{class:'sub'},'Meta: '+dur(c.foco)),ir('foco','Iniciar foco')),
-    card('Academia',h('p',{class:'big'},tr+' / '+c.tr),pg(tr,c.tr),h('p',{class:'sub'},'dias de treino nos últimos 7 dias'),ir('acad','Registrar treino')),
-    card('Hábitos de hoje',hb.length?h('div',{class:'row'},hb.map(tg)):h('p',{class:'sub'},'Crie hábitos simples, como beber água ou ler 10 minutos.'),ir('hab',hb.length?'Ver hábitos':'Criar hábito')),
-    vAjustes(),vDados());
+  const c=cfg(),hj=day(),mv=items.filter(x=>x.t==='gasto'&&x.d===hj&&x.k!=='e'),f=soma(doDia('foco')),u7=ult(7),hb=habs(),
+    tr=new Set(items.filter(x=>x.t==='treino'&&u7.includes(x.d)).map(x=>x.d)).size;
+  const lin=(t,v,b,to)=>h('button',{class:'stat',onclick:()=>go(to)},h('span',{class:'sub'},t),h('strong',{},v),b||null);
+  return h('div',{},h('div',{class:'top'},h('h1',{},new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})),h('button',{onclick:()=>go('aju')},'Ajustes')),
+    h('section',{class:'card stats'},lin('Gasto de hoje',brl(somav(mv)),null,'fin'),lin('Foco de hoje',f?dur(f):'0 min',pg(f,c.foco),'foco'),lin('Treinos na semana',tr+' de '+c.tr,pg(tr,c.tr),'acad')),
+    hb.length?h('section',{class:'card'},h('div',{class:'row'},hb.map(tg))):null);
 }
+function vAju(){return h('div',{},h('div',{class:'top'},h('h1',{},'Ajustes'),h('button',{onclick:()=>go('hoje')},'Voltar')),vAjustes(),vDados())}
 function vAjustes(){
   const c=cfg(),o=h('input',{type:'text',inputmode:'decimal',id:'mo',value:c.orc?String(c.orc/100).replace('.',','):'',placeholder:'0 = sem meta'}),
     f=h('input',{type:'text',inputmode:'numeric',id:'mf',value:c.foco}),t=h('input',{type:'text',inputmode:'numeric',id:'mt',value:c.tr}),er=h('p',{class:'err',role:'alert'});
@@ -165,8 +165,8 @@ function vHab(){
 
 function render(){
   document.querySelectorAll('nav button').forEach(b=>b.dataset.tab===tab?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current'));
-  $('nav').style.setProperty('--i',ABAS.indexOf(tab));
-  $('#main').replaceChildren({hoje:vHoje,fin:vFin,foco:vFoco,acad:vAcad,hab:vHab}[tab]());tick();window.scrollTo(0,0);
+  $('nav').style.setProperty('--i',ABAS.indexOf(tab));$('nav').toggleAttribute('data-off',!ABAS.includes(tab));
+  $('#main').replaceChildren({hoje:vHoje,fin:vFin,foco:vFoco,acad:vAcad,hab:vHab,aju:vAju}[tab]());tick();window.scrollTo(0,0);
 }
 document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;render()}));
 document.addEventListener('pointermove',e=>{const c=e.target.closest?.('.card');if(c){const r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')}});
