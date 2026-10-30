@@ -49,18 +49,21 @@ function vHoje(){
   const c=cfg(),hj=day(),mv=items.filter(x=>x.t==='gasto'&&x.d===hj&&x.k!=='e'),f=soma(doDia('foco')),u7=ult(7),hb=habs(),
     tr=new Set(items.filter(x=>x.t==='treino'&&u7.includes(x.d)).map(x=>x.d)).size,lb=items.filter(x=>x.t==='nota'&&x.rem&&!x.ok&&x.rem<=hj);
   const lin=(t,v,b,to)=>h('button',{class:'stat',onclick:()=>go(to)},h('span',{class:'sub'},t),h('strong',{},v),b||null);
-  return h('div',{},h('div',{class:'top'},h('h1',{},new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})),h('button',{onclick:()=>{sub.mais='aju';go('mais')}},'Ajustes')),
+  return h('div',{class:'one'},h('div',{class:'top'},h('h1',{},new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})),h('button',{onclick:()=>{sub.mais='aju';go('mais')}},'Ajustes')),
     h('section',{class:'card stats'},lin('Gasto de hoje',brl(somav(mv)),null,'fin'),lin('Foco de hoje',f?dur(f):'0 min',pg(f,c.foco),'foco'),lin('Treinos na semana',tr+' de '+c.tr,pg(tr,c.tr),'acad')),
     lb.length?card('Lembretes',h('ul',{},lb.map(o=>h('li',{},h('span',{},o.txt+(o.rem<hj?' ('+dm(o.rem)+')':o.hr?' · '+o.hr:'')),h('button',{onclick:()=>{put({...o,ok:true});render()}},'Concluir'))))):null,
     hb.length?h('section',{class:'card'},h('div',{class:'row'},hb.map(tg))):null);
 }
 function vAjustes(){
-  const c=cfg(),o=h('input',{type:'text',inputmode:'decimal',id:'mo',value:c.orc?String(c.orc/100).replace('.',','):'',placeholder:'0 = sem meta'}),
+  const c=cfg(),th=(k,l)=>chip('th',k,l,(localStorage.getItem('vida_tema')||'auto')===k,()=>{k==='auto'?localStorage.removeItem('vida_tema'):localStorage.setItem('vida_tema',k);aplicarTema()});
+  const o=h('input',{type:'text',inputmode:'decimal',id:'mo',value:c.orc?String(c.orc/100).replace('.',','):'',placeholder:'Sem meta'}),
     f=h('input',{type:'text',inputmode:'numeric',id:'mf',value:c.foco}),t=h('input',{type:'text',inputmode:'numeric',id:'mt',value:c.tr}),er=h('p',{class:'err',role:'alert'});
+  const campo=(id,tit,dica,inp)=>h('div',{class:'meta'},h('label',{for:id},tit),h('span',{class:'sub'},dica),inp);
   const salvar=()=>{const orc=o.value.trim()?Math.round(parseFloat(o.value.replace(/\./g,'').replace(',','.'))*100):0,fo=Number(f.value),tr=Number(t.value);
     if(!(orc>=0&&orc<1e12&&Number.isInteger(fo)&&fo>=1&&fo<=1440&&Number.isInteger(tr)&&tr>=1&&tr<=7))return er.textContent='Confira: foco de 1 a 1440 minutos e treinos de 1 a 7 por semana.';
     put({id:'cfg',t:'cfg',d:day(),ts:Date.now(),orc,foco:fo,tr});aviso('Metas salvas.');render()};
-  return card('Metas',h('label',{for:'mo'},'Orçamento do mês (R$)'),o,h('label',{for:'mf'},'Foco por dia (minutos)'),f,h('label',{for:'mt'},'Treinos por semana'),t,er,h('div',{class:'row'},h('button',{class:'p',onclick:salvar},'Salvar metas')));
+  return [card('Aparência',h('div',{class:'row',role:'radiogroup','aria-label':'Tema visual'},th('auto','Automático'),th('light','Claro'),th('dark','Escuro'))),
+    card('Metas',campo('mo','Orçamento do mês (Finanças)','Em reais. Deixe vazio para não usar meta.',o),campo('mf','Foco por dia (Foco)','Em minutos, de 1 a 1440. Padrão: 60.',f),campo('mt','Treinos por semana (Academia)','De 1 a 7 dias. Padrão: 3.',t),er,h('div',{class:'row'},h('button',{class:'p',onclick:salvar},'Salvar metas')))];
 }
 function vDados(){
   const f=h('input',{type:'file',accept:'application/json',hidden:'',onchange:importar});
@@ -170,10 +173,8 @@ function vFoco(){
   }else if(s==='as'){
     const nt=h('input',{type:'text',maxlength:'30',id:'nt',placeholder:'Ex.: Estudar, Trabalhar, Ler'});
     const add=()=>{const v=nt.value.trim();if(!v||temas.length>=12||temas.some(t=>t.txt.toLowerCase()===v.toLowerCase()))return;novo('tema',{txt:v.slice(0,30)});render()};
-    const th=(k,l)=>chip('th',k,l,(localStorage.getItem('vida_tema')||'auto')===k,()=>{k==='auto'?localStorage.removeItem('vida_tema'):localStorage.setItem('vida_tema',k);aplicarTema()});
     cs=[card('Seus assuntos',h('label',{for:'nt'},'Novo assunto'),nt,h('div',{class:'row'},h('button',{class:'p',onclick:add},'Adicionar')),
-      temas.length?h('ul',{},temas.map(t=>h('li',{},h('span',{},t.txt+' · hoje '+dur(soma(hoje.filter(x=>x.tema===t.txt)))),lixo(t)))):h('p',{class:'sub'},'Crie assuntos para saber onde seu tempo vai.')),
-      card('Aparência',h('div',{class:'row',role:'radiogroup','aria-label':'Tema visual'},th('auto','Automático'),th('light','Claro'),th('dark','Escuro')))];
+      temas.length?h('ul',{},temas.map(t=>h('li',{},h('span',{},t.txt+' · hoje '+dur(soma(hoje.filter(x=>x.tema===t.txt)))),lixo(t)))):h('p',{class:'sub'},'Crie assuntos para saber onde seu tempo vai.'))];
   }else{
     const u7=ult(7),pt={};items.filter(x=>x.t==='foco'&&u7.includes(x.d)).forEach(x=>{const k=x.tema||'Sem assunto';pt[k]=(pt[k]||0)+x.min});const mx=Math.max(1,...Object.values(pt)),t30=soma(items.filter(x=>x.t==='foco'&&ult(30).includes(x.d)));
     cs=[card('Últimos 7 dias',barras(u7.map(d=>[d,soma(doDia('foco',d))]),v=>v||'–')),
@@ -234,7 +235,7 @@ function vMais(){
         h('p',{class:'sub'},'Lembretes aparecem em Hoje e como aviso quando o app está aberto. O Vida não usa servidor, então não consegue avisar com o app fechado.'),
         h('div',{class:'row'},h('button',{class:'p',onclick:salvar},'Salvar'),e?h('button',{onclick:()=>{ed=null;render()}},'Cancelar'):null,window.Notification&&Notification.permission==='default'?h('button',{onclick:()=>Notification.requestPermission().then(render)},'Ativar avisos'):null)),
       card('Suas notas',q,f,ul)];
-  }else cs=[vAjustes(),vDados()];
+  }else cs=[...vAjustes(),vDados()];
   return h('div',{},h('h1',{},'Mais'),seg('mais',[['hab','Hábitos'],['nt','Notas'],['aju','Ajustes']]),...cs);
 }
 
