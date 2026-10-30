@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; manifest-src 'self'; connect-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="theme-color" content="#FBF8F3">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+<title>Vida</title>
+</head>
+<body>
+<main id="main" tabindex="-1"></main>
+<div id="toast" role="status" hidden></div>
+<nav aria-label="Áreas do app">
+<button data-tab="hoje"><span aria-hidden="true">🏠</span>Hoje</button>
+<button data-tab="fin"><span aria-hidden="true">💰</span>Finanças</button>
+<button data-tab="emo"><span aria-hidden="true">🙂</span>Emoções</button>
+<button data-tab="esp"><span aria-hidden="true">🕊️</span>Espírito</button>
+</nav>
+<noscript>Este app precisa de JavaScript.</noscript>
+<script src="app.js"></script>
+</body>
+</html>
