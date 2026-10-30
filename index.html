@@ -2,22 +2,24 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; manifest-src 'self'; connect-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
-<meta name="theme-color" content="#FBF8F3">
+<meta name="theme-color" content="#E9E9E6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0A0A0B" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="stylesheet" href="style.css">
 <title>Vida</title>
 </head>
 <body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
 <main id="main" tabindex="-1"></main>
 <div id="toast" role="status" hidden></div>
 <nav aria-label="Áreas do app">
-<button data-tab="hoje"><span aria-hidden="true">🏠</span>Hoje</button>
-<button data-tab="fin"><span aria-hidden="true">💰</span>Finanças</button>
-<button data-tab="emo"><span aria-hidden="true">🙂</span>Emoções</button>
-<button data-tab="esp"><span aria-hidden="true">🕊️</span>Espírito</button>
+<button data-tab="hoje"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Hoje</button>
+<button data-tab="fin"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10h4a1.5 1.5 0 010 3h-3a1.5 1.5 0 000 3h4"/></svg>Finanças</button>
+<button data-tab="emo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M8.5 14c1 1.5 2.2 2 3.5 2s2.5-.5 3.5-2M9 10h.01M15 10h.01"/></svg>Emoções</button>
+<button data-tab="esp"><svg viewBox="0 0 24 24"><path d="M12 3c1 4 5 6 5 10a5 5 0 01-10 0c0-4 4-6 5-10z"/></svg>Espírito</button>
 </nav>
 <noscript>Este app precisa de JavaScript.</noscript>
 <script src="app.js"></script>

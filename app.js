@@ -1,7 +1,7 @@
 'use strict';
 // Vida: tudo é guardado só neste aparelho (IndexedDB). Nenhum dado sai daqui.
 const $=s=>document.querySelector(s);
-const h=(t,p,...k)=>{const e=document.createElement(t);for(const a in p||{}){a.startsWith('on')?e.addEventListener(a.slice(2),p[a]):e.setAttribute(a,p[a])}k.flat().forEach(c=>c!=null&&e.append(c));return e};
+const h=(t,p,...k)=>{const e=document.createElement(t);for(const a in p||{}){a==='style'?(e.style.cssText=p[a]):a.startsWith('on')?e.addEventListener(a.slice(2),p[a]):e.setAttribute(a,p[a])}k.flat().forEach(c=>c!=null&&e.append(c));return e};
 const day=(d=new Date())=>d.toLocaleDateString('sv-SE');
 const brl=c=>(c/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const CATS=['Casa','Comida','Transporte','Saúde','Lazer','Outros'];
@@ -114,10 +114,12 @@ function vEsp(){
 
 function render(){
   document.querySelectorAll('nav button').forEach(b=>b.dataset.tab===tab?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current'));
+  $('nav').style.setProperty('--i',['hoje','fin','emo','esp'].indexOf(tab));
   cor({hoje:'hoje',fin:'fin',emo:'emo',esp:'esp'}[tab]);
   const m=$('#main');m.replaceChildren({hoje:vHoje,fin:vFin,emo:vEmo,esp:vEsp}[tab]());tick();window.scrollTo(0,0);
 }
 document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;render()}));
+document.addEventListener('pointermove',e=>{const c=e.target.closest?.('.card');if(c){const r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')}});
 setInterval(tick,500);document.addEventListener('visibilitychange',tick);
 (async()=>{
   try{db=await abrir();items=await lerTudo();navigator.storage?.persist?.()}
