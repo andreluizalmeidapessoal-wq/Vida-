@@ -1,6 +1,6 @@
 # Vida
 
-App web (PWA) simples para organizar **finanças, emoções e espiritualidade** em um só lugar.
+App web (PWA) simples para organizar **finanças, foco e academia** em um só lugar.
 Código aberto. Sem login, sem servidor, sem nuvem: **todos os dados ficam só no seu aparelho** (IndexedDB).
 
 ## Instalar (usuário)
